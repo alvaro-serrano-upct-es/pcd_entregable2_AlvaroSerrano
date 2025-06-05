@@ -19,14 +19,14 @@ class Singleton:
         return "Método 2 ejecutado"
     
 if __name__ == "__main__":
-# Uso del patrón Singleton con atributos y métodos
- singleton = Singleton.obtener_instancia()
- # Acceso a los atributos
- print("Atributo 1:", singleton.atributo1)
- print("Atributo 2:", singleton.atributo2)
- # Llamada a los métodos
- print(singleton.metodo1())
- print(singleton.metodo2())
- # Ambas instancias son la misma
- singleton2 = Singleton.obtener_instancia()
- print(singleton is singleton2) # Devuelve True
+    # Uso del patrón Singleton con atributos y métodos
+    singleton = Singleton.obtener_instancia()
+    # Acceso a los atributos
+    print("Atributo 1:", singleton.atributo1)
+    print("Atributo 2:", singleton.atributo2)
+    # Llamada a los métodos
+    print(singleton.metodo1())
+    print(singleton.metodo2())
+    # Ambas instancias son la misma
+    singleton2 = Singleton.obtener_instancia()
+    print(singleton is singleton2) # Devuelve True
