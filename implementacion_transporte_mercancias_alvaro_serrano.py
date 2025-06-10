@@ -1,32 +1,71 @@
-class Singleton:
+from datetime import datetime
+
+class Manejador_furgoneta:
+    pass
+
+class Objetivo:
+    pass
+
+class Publicador:
+    pass
+
+class Subscriptor:
+    pass
+
+class Empresa(Objetivo, Manejador_furgoneta):
    
-    _unicaInstancia = None
+    _unicaEmpresa = None
    
-    def __init__(self):
-        self.atributo1 = "Valor1"
-        self.atributo2 = "Valor2"
+    def __init__(self, furgonetas: list):
+
+        # Comprobar que todos los elementos sean Furgonetas
+        if any(type(furgoneta) != Furgoneta for furgoneta in furgonetas):
+            raise TypeError("La lista de furgonetas debe ser de objetos Furgonetas")
+        
+        # Creamos los atributos
+        self.furgonetas = furgonetas
     
+    # Metodo para crear una Empresa única
     @classmethod
-    def obtener_instancia(cls):
-        if not cls._unicaInstancia :
-            cls._unicaInstancia = cls()
-        return cls._unicaInstancia
+    def obtener_empresa(cls, furgonetas):
+        if not cls._unicaEmpresa :
+            cls._unicaEmpresa = cls(furgonetas)
+        return cls._unicaEmpresa
     
-    def metodo1(self):
+    # Función que inicia el seguimiento de las furgonetas
+    def seguimiento(self):
+
         return "Método 1 ejecutado"
     
-    def metodo2(self):
-        return "Método 2 ejecutado"
+class Furgoneta(Publicador):
+
+    def __init__(self, matricula: str):
+
+        if len(matricula) != 7:
+            raise TypeError("La matrícula debe tener 7 caracteres")
+
+        self.matricula = matricula
+        self.timestamp = datetime.now()
+        self.t = 0.
+        self.lat = 0.
+        self.lon = 0.
+        self.h = 0.
+
+class Cliente(Empresa):
+    
+    def __init__(self):
+
+        #Empresa.__init__(furgonetas)
+        pass
     
 if __name__ == "__main__":
-    # Uso del patrón Singleton con atributos y métodos
-    singleton = Singleton.obtener_instancia()
-    # Acceso a los atributos
-    print("Atributo 1:", singleton.atributo1)
-    print("Atributo 2:", singleton.atributo2)
-    # Llamada a los métodos
-    print(singleton.metodo1())
-    print(singleton.metodo2())
-    # Ambas instancias son la misma
-    singleton2 = Singleton.obtener_instancia()
-    print(singleton is singleton2) # Devuelve True
+    furgoneta1 = Furgoneta('1234BCD')
+    furgoneta2 = Furgoneta('0000BBB')
+    furgoneta3 = Furgoneta('2005SRD')
+    furgoneta4 = Furgoneta('2025PCD')
+    furgonetas = [furgoneta1, furgoneta2, furgoneta3, furgoneta4]
+    empresa = Empresa.obtener_empresa(furgonetas)
+    print("Furgonetas:", empresa.furgonetas)
+    print(empresa.seguimiento())
+    empresa2 = Empresa.obtener_empresa([furgoneta2, furgoneta4])
+    print(empresa is empresa2)
