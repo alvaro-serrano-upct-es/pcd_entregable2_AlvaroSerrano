@@ -34,7 +34,7 @@ class Manejador_estadisticos(Manejador_camion):     # Calcula la media de la tem
             print("     humedad media último minuto =", media_h)
         super().manejador(camion)
 
-class Manejador_umbral(Manejador_camion):       # Comprueba que la temperatura no supere un límite que hemos establecido en 7,5
+class Manejador_temperatura(Manejador_camion):       # Comprueba que la temperatura no supere un límite que hemos establecido en 7,5
     def manejador(self, camion):
         if camion.t[-1] > 7.5:
             print("  ↳ Alerta: ¡¡¡temperatura supera el umbral de 7,5 grados!!!")
@@ -42,7 +42,7 @@ class Manejador_umbral(Manejador_camion):       # Comprueba que la temperatura n
             print("  ↳ Alerta: Ninguna")
         super().manejador(camion)
 
-class Manejador_temperatura(Manejador_camion):  # Revisa que en los últimos 30 segundos la temperatura y la humedad no haya variado más de 2º
+class Manejador_umbral(Manejador_camion):  # Revisa que en los últimos 30 segundos la temperatura y la humedad no haya variado más de 2º
     def manejador(self, camion):
         print("   ↳ Variación: ")
         if (len(camion.t) < 6 or len(camion.h) < 6):
@@ -156,7 +156,7 @@ class Empresa(Subscriptor): # La clase Empresa es un singleton para que solo hay
         # Creamos los atributos
         super().__init__()
         self.camiones = []
-        self.procesador = Manejador_estadisticos(Manejador_umbral(Manejador_temperatura()))
+        self.procesador = Manejador_estadisticos(Manejador_temperatura(Manejador_umbral()))
     
     # Metodo para crear una Empresa única
     @classmethod
