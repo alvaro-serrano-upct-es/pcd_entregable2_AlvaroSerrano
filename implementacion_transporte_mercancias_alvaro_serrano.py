@@ -125,7 +125,7 @@ class Camion(Publicador):   # Abstraemos una clase que representa un camion y qu
     def __init__(self, matricula: str):
 
         if len(matricula) != 7:
-            raise TypeError("La matrícula debe tener 7 caracteres")
+            raise Exception("La matrícula debe tener 7 caracteres.")
 
         super().__init__()
         self.matricula = matricula
