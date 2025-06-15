@@ -22,12 +22,13 @@ def test_singleton():
     # s2 = Camion('2345VDF')
     assert s1 is s2
 
-def test_observer():
+def test_observer(capfd):
     singleton = Empresa.obtener_empresa()
     camion = Camion("1234BBB")
     singleton.añadir_camion(camion)
-    camion.obtener_datos()
-    assert Camion("1234BBB")  # Verifica que no lanza errores
+    singleton.camiones[0].notificarSuscriptores()  # Verifica que no lanza errores 
+    assert "Datos recibidos del camión" in out
+
 
 def test_chain_of_responsibility():
     datos = Camion('0000AAA')
@@ -40,12 +41,3 @@ def test_adapter():
     adaptador = Objetivo(coordenadas)
     codigo = adaptador.conversor()
     assert codigo.startswith("OCL(")
-
-if __name__ == "__main__":
-
-    # test_raises_exception_on_Empresa()
-    # test_raises_exception_on_matricula()
-    test_singleton()
-    # test_observer()
-    # test_chain_of_responsibility()
-    # test_adapter()

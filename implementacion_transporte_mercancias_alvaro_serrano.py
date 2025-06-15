@@ -82,8 +82,8 @@ class Objetivo:     # La clase convierte de coordenadas GD a OCL
         # Coordenas transformadas
         return f"OCL({coord[0]},{coord[1]},{coord[2]})"
 
-# ------- Clases Subscriptor y Publicador del Observador -------
-class Subscriptor:
+# ------- Clases Suscriptor y Publicador del Observador -------
+class Suscriptor:
     
     def actualizar(self, camion, datos):
 
@@ -105,19 +105,19 @@ class Subscriptor:
 class Publicador:
     
     def __init__(self):
-        self.subscriptores= []
+        self.suscriptores= []
 
-    def alta(self, subscriptor):
-        if subscriptor not in self.subscriptores:
-            self.subscriptores.append(subscriptor)
+    def alta(self, suscriptor):
+        if suscriptor not in self.suscriptores:
+            self.suscriptores.append(suscriptor)
 
     def baja(self, subscriptor):
-        self.subscriptores.remove(subscriptor)
+        self.suscriptores.remove(subscriptor)
 
     def notificarSuscriptores(self):
-        for subscriptor in self.subscriptores:
-            subscriptor.actualizar(self, self.obtener_datos())
-            subscriptor.procesador.manejador(self)
+        for suscriptor in self.suscriptores:
+            suscriptor.actualizar(self, self.obtener_datos())
+            suscriptor.procesador.manejador(self)
 
 # ------- Clases principales: Camion, Empresa, Cliente -------
 class Camion(Publicador):   # Abstraemos una clase que representa un camion y que guardará los valores de estos cuando se vayan actualizando.
@@ -144,7 +144,7 @@ class Camion(Publicador):   # Abstraemos una clase que representa un camion y qu
         humedad = random.uniform(-2.0, 2.0) 
         return [round(self.t[-1] + temperatura, 2), round(self.lat[-1] + lat, 2), round(self.lon[-1] + lon, 2), round(self.h[-1] + humedad, 2)]
 
-class Empresa(Subscriptor): # La clase Empresa es un singleton para que solo haya una sola instancia 
+class Empresa(Suscriptor): # La clase Empresa es un singleton para que solo haya una sola instancia 
    
     _unicaEmpresa = None
    
