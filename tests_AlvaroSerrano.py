@@ -27,6 +27,7 @@ def test_observer(capfd):
     camion = Camion("1234BBB")
     singleton.añadir_camion(camion)
     singleton.camiones[0].notificarSuscriptores()  # Verifica que no lanza errores 
+    out, err = capfd.readouterr()
     assert "Datos recibidos del camión" in out
 
 
