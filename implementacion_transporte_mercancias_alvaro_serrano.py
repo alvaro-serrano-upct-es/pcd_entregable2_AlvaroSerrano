@@ -19,41 +19,56 @@ class Manejador_estadisticos(Manejador_camion):     # Calcula la media de la tem
     def manejador(self, camion):
         print(" ↳ Estadísticos:")
         if len(camion.t) >= 12 and len(camion.h) >= 12:
-            suma_t_ultimo_min = functools.reduce(lambda x, y: x+y, camion.t[-12:])
-            media_t = round(suma_t_ultimo_min/12, 2)
-            print("     temperatura media último minuto =", media_t)
-            suma_h_ultimo_min = functools.reduce(lambda x, y: x+y, camion.h[-12:])
-            media_h = round(suma_h_ultimo_min/12, 2)
-            print("     humedad media último minuto =", media_h)
+
+            tem_ult_min = camion.t[-12:]
+            hum_ult_min = camion.h[-12:]
+
+            # Media de la temperatura del último minuto
+            media_t = functools.reduce(lambda x, y: x+y, tem_ult_min)/12
+            # Media de la humedad del último minuto
+            media_h = functools.reduce(lambda x, y: x+y, hum_ult_min)/12
+            # Desviación típica de la temperatura del último minuto
+            desv_tem_ult_min = np.sqrt(sum(map(lambda x: (x - media_t)**2, tem_ult_min))/12)
+            # Desviación típica de la humedad del último minuto
+            desv_hum_ult_min = np.sqrt(sum(map(lambda x: (x - media_h)**2, hum_ult_min))/12)
+
         else:
-            suma_t_ultimo_min = functools.reduce(lambda x, y: x+y, camion.t)
-            media_t = round(suma_t_ultimo_min/len(camion.t), 2)
-            print("     temperatura media último minuto =", media_t)
-            suma_h_ultimo_min = functools.reduce(lambda x, y: x+y, camion.h)
-            media_h = round(suma_h_ultimo_min/len(camion.h), 2)
-            print("     humedad media último minuto =", media_h)
+
+            media_t = functools.reduce(lambda x, y: x+y, camion.t)/len(camion.t)
+            media_h = functools.reduce(lambda x, y: x+y, camion.h)/len(camion.h)
+            desv_tem_ult_min = np.sqrt(sum(map(lambda x: (x - media_t)**2, camion.t))/len(camion.t))
+            desv_hum_ult_min = np.sqrt(sum(map(lambda x: (x - media_h)**2, camion.h))/len(camion.h))
+        
+        print("     ·Temperatura media último minuto: ", round(media_t, 2))
+        print("     ·Humedad media último minuto: ", round(media_h, 2))
+        print("     ·Desviación típica temperatura último minuto: ", round(desv_tem_ult_min, 2))
+        print("     ·Desviación típica humedad último minuto: ", round(desv_hum_ult_min, 2))
+
         super().manejador(camion)
 
 class Manejador_temperatura(Manejador_camion):       # Comprueba que la temperatura no supere un límite que hemos establecido en 7,5
     def manejador(self, camion):
+        print("  ↳ Alerta:")
         if camion.t[-1] > 7.5:
-            print("  ↳ Alerta: ¡¡¡temperatura supera el umbral de 7,5 grados!!!")
+            print("      ¡¡¡temperatura supera el umbral de 7,5 grados!!!")
         else:
-            print("  ↳ Alerta: Ninguna")
+            print("      ·Ninguna alerta")
+        valores = list(filter(lambda x: x > 7.5, camion.t))
+        print(f"      ·Valores que han superado el umbral: {valores}")
         super().manejador(camion)
 
 class Manejador_umbral(Manejador_camion):  # Revisa que en los últimos 30 segundos la temperatura y la humedad no haya variado más de 2º
     def manejador(self, camion):
         print("   ↳ Variación: ")
         if (len(camion.t) < 6 or len(camion.h) < 6):
-            print("       Ninguna variación significativa registrada")
+            print("       ·Ninguna variación significativa registrada")
         else:
             if abs(camion.t[-6] - camion.t[-1]) > 2:
-                print(f"       La variación de temperatura supera los 2 grados -> alcanza los {int(abs(camion.t[-6] - camion.t[-1]))} grados de variación")
+                print(f"       ·La variación de temperatura supera los 2 grados -> alcanza los {int(abs(camion.t[-6] - camion.t[-1]))} grados de variación")
             if abs(camion.h[-6] - camion.h[-1]) > 2:
-                print(f"       La variación de humedad supera los 2 grados -> alcanza los {int(abs(camion.h[-6] - camion.h[-1]))} grados de variación")
+                print(f"       ·La variación de humedad supera los 2 grados -> alcanza los {int(abs(camion.h[-6] - camion.h[-1]))} grados de variación")
             if not (abs(camion.t[-6] - camion.t[-1]) > 2 or abs(camion.h[-6] - camion.h[-1]) > 2):
-                print("       Ninguna variación significativa registrada")
+                print("       ·Ninguna variación significativa registrada")
         print()
         super().manejador(camion)
 
@@ -63,7 +78,7 @@ class CoordenadasGD: # Clase abstraida para auxiliar a la clase objetivo
         self.lat = lat
         self.lon = lon
 
-class Objetivo:     # La clase convierte de coordenadas GD a OCL
+class Objetivo:     # La clase convierte de coordenadas GD a OCL con la formula matemática que se usa para ello
 
     def __init__(self, coordenadas_gd):
         self.coordenadas_gd = coordenadas_gd
@@ -171,11 +186,13 @@ class Empresa(Suscriptor): # La clase Empresa es un singleton para que solo haya
     
     # Función que inicia el seguimiento de los camiones. Usa asyncio para que el seguimiento sea cada 5 segundo
     async def seguimiento(self):
+        cont = 1
         while True:
             await asyncio.sleep(5)
-            print("----------------- Datos recibidos -----------------")
+            print(f"----------------- {cont}º Datos recibidos -----------------")
             for camion in self.camiones:
                 camion.notificarSuscriptores()
+            cont += 1
 
 class Cliente(Empresa): # La clase empresa será la que sirva de intermediaria entre la empresa y el cliente a la hora de hacer el seguimiento
     
@@ -198,7 +215,7 @@ if __name__ == "__main__":
     # Añadimos los camiones a la empresa
     empresa.añadir_camion(camion1)
     empresa.añadir_camion(camion2)
-    empresa.añadir_camion(camion3)
+    # empresa.añadir_camion(camion3)
     # empresa.añadir_camion(camion4)
     # print("Camiones:", empresa.camiones)
 
